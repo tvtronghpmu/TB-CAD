@@ -37,6 +37,7 @@ def download_models():
             print(f"  ✓ {filename} already exists")
 
 download_models()
+
 # ── PAGE CONFIG ──────────────────────────────────────────────────────────────
 st.set_page_config(
     page_title="TB-CAD | Chẩn Đoán Lao Phổi AI",
@@ -257,6 +258,7 @@ for k, v in {
     "cls_model": None, "cls_type": None,
     "det_model": None, "det_type": None,
     "history": [], "results": {},
+    "prev_upload_keys": [],   # theo doi file da upload lan truoc
 }.items():
     if k not in st.session_state:
         st.session_state[k] = v
@@ -860,6 +862,12 @@ with tab_main:
         key="uploader",
     )
     st.markdown('</div>', unsafe_allow_html=True)
+
+    # ── Auto-reset: xoa ket qua cu khi danh sach file thay doi ──
+    current_keys = sorted([f.name + str(f.size) for f in uploaded_files]) if uploaded_files else []
+    if current_keys != st.session_state.prev_upload_keys:
+        st.session_state.results = {}
+        st.session_state.prev_upload_keys = current_keys
 
     if not uploaded_files:
         st.markdown("""
